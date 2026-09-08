@@ -1,0 +1,709 @@
+[
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.oauth_accounts",
+    "label": "Create table \"oauth_accounts\"",
+    "summary": "Creates table \"oauth_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "oauth_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"oauth_accounts\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"oauth_accounts\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"oauth_accounts\"",
+        "sql": "CREATE TABLE \"public\".\"oauth_accounts\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"provider\" text NOT NULL,\n  \"providerUserId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"userId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"oauth_accounts_provider_check_5918ff78\" CHECK (\"provider\" IN ('GOOGLE', 'GITHUB'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"oauth_accounts\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"oauth_accounts\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.oauth_credentials",
+    "label": "Create table \"oauth_credentials\"",
+    "summary": "Creates table \"oauth_credentials\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "oauth_credentials"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"oauth_credentials\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"oauth_credentials\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"oauth_credentials\"",
+        "sql": "CREATE TABLE \"public\".\"oauth_credentials\" (\n  \"accessToken\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"expiresAt\" timestamptz NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"oauthAccountId\" uuid NOT NULL,\n  \"refreshToken\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"oauth_credentials\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"oauth_credentials\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.sessions",
+    "label": "Create table \"sessions\"",
+    "summary": "Creates table \"sessions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "sessions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"sessions\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"sessions\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"sessions\"",
+        "sql": "CREATE TABLE \"public\".\"sessions\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"expiresAt\" timestamptz NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"lastUsedAt\" timestamptz NOT NULL,\n  \"refreshTokenHash\" text NOT NULL,\n  \"revoked\" bool DEFAULT false NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"userId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"sessions\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"sessions\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.users",
+    "label": "Create table \"users\"",
+    "summary": "Creates table \"users\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "users"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"users\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"users\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"users\"",
+        "sql": "CREATE TABLE \"public\".\"users\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"email\" text NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"username\" text,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"users\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"users\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.verification_tokens",
+    "label": "Create table \"verification_tokens\"",
+    "summary": "Creates table \"verification_tokens\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "verification_tokens"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"verification_tokens\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"verification_tokens\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"verification_tokens\"",
+        "sql": "CREATE TABLE \"public\".\"verification_tokens\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"expiresAt\" timestamptz NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"tokenHash\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"used\" bool DEFAULT false NOT NULL,\n  \"userId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"verification_tokens\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"verification_tokens\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.oauth_accounts.oauth_accounts_provider_providerUserId_key",
+    "label": "Add unique constraint on \"oauth_accounts\" (provider, providerUserId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "oauth_accounts_provider_providerUserId_key",
+        "table": "oauth_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"oauth_accounts_provider_providerUserId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "oauth_accounts_provider_providerUserId_key",
+          "public",
+          "\"public\".\"oauth_accounts\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"oauth_accounts_provider_providerUserId_key\"",
+        "sql": "ALTER TABLE \"public\".\"oauth_accounts\" ADD CONSTRAINT \"oauth_accounts_provider_providerUserId_key\" UNIQUE (\"provider\", \"providerUserId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"oauth_accounts_provider_providerUserId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "oauth_accounts_provider_providerUserId_key",
+          "public",
+          "\"public\".\"oauth_accounts\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.oauth_credentials.oauth_credentials_oauthAccountId_key",
+    "label": "Add unique constraint on \"oauth_credentials\" (oauthAccountId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "oauth_credentials_oauthAccountId_key",
+        "table": "oauth_credentials"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"oauth_credentials_oauthAccountId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "oauth_credentials_oauthAccountId_key",
+          "public",
+          "\"public\".\"oauth_credentials\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"oauth_credentials_oauthAccountId_key\"",
+        "sql": "ALTER TABLE \"public\".\"oauth_credentials\" ADD CONSTRAINT \"oauth_credentials_oauthAccountId_key\" UNIQUE (\"oauthAccountId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"oauth_credentials_oauthAccountId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "oauth_credentials_oauthAccountId_key",
+          "public",
+          "\"public\".\"oauth_credentials\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.users.users_username_key",
+    "label": "Add unique constraint on \"users\" (username)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "users_username_key",
+        "table": "users"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"users_username_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "users_username_key",
+          "public",
+          "\"public\".\"users\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"users_username_key\"",
+        "sql": "ALTER TABLE \"public\".\"users\" ADD CONSTRAINT \"users_username_key\" UNIQUE (\"username\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"users_username_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "users_username_key",
+          "public",
+          "\"public\".\"users\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.users.users_email_key",
+    "label": "Add unique constraint on \"users\" (email)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "users_email_key",
+        "table": "users"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"users_email_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "users_email_key",
+          "public",
+          "\"public\".\"users\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"users_email_key\"",
+        "sql": "ALTER TABLE \"public\".\"users\" ADD CONSTRAINT \"users_email_key\" UNIQUE (\"email\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"users_email_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "users_email_key",
+          "public",
+          "\"public\".\"users\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.verification_tokens.verification_tokens_tokenHash_key",
+    "label": "Add unique constraint on \"verification_tokens\" (tokenHash)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "verification_tokens_tokenHash_key",
+        "table": "verification_tokens"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"verification_tokens_tokenHash_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "verification_tokens_tokenHash_key",
+          "public",
+          "\"public\".\"verification_tokens\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"verification_tokens_tokenHash_key\"",
+        "sql": "ALTER TABLE \"public\".\"verification_tokens\" ADD CONSTRAINT \"verification_tokens_tokenHash_key\" UNIQUE (\"tokenHash\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"verification_tokens_tokenHash_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "verification_tokens_tokenHash_key",
+          "public",
+          "\"public\".\"verification_tokens\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.oauth_accounts.oauth_accounts_userId_idx_a489d58a",
+    "label": "Create index \"oauth_accounts_userId_idx_a489d58a\" on \"oauth_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "oauth_accounts_userId_idx_a489d58a",
+        "table": "oauth_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"oauth_accounts_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"oauth_accounts_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"oauth_accounts_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"oauth_accounts_userId_idx_a489d58a\" ON \"public\".\"oauth_accounts\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"oauth_accounts_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"oauth_accounts_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.sessions.sessions_userId_idx_a489d58a",
+    "label": "Create index \"sessions_userId_idx_a489d58a\" on \"sessions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "sessions_userId_idx_a489d58a",
+        "table": "sessions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"sessions_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"sessions_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"sessions_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"sessions_userId_idx_a489d58a\" ON \"public\".\"sessions\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"sessions_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"sessions_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.verification_tokens.verification_tokens_userId_idx_a489d58a",
+    "label": "Create index \"verification_tokens_userId_idx_a489d58a\" on \"verification_tokens\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "verification_tokens_userId_idx_a489d58a",
+        "table": "verification_tokens"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"verification_tokens_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"verification_tokens_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"verification_tokens_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"verification_tokens_userId_idx_a489d58a\" ON \"public\".\"verification_tokens\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"verification_tokens_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"verification_tokens_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.oauth_accounts.oauth_accounts_userId_fkey",
+    "label": "Add foreign key \"oauth_accounts_userId_fkey\" on \"oauth_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "oauth_accounts_userId_fkey",
+        "table": "oauth_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"oauth_accounts_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "oauth_accounts_userId_fkey",
+          "public",
+          "\"public\".\"oauth_accounts\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"oauth_accounts_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"oauth_accounts\"\nADD CONSTRAINT \"oauth_accounts_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"users\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"oauth_accounts_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "oauth_accounts_userId_fkey",
+          "public",
+          "\"public\".\"oauth_accounts\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.oauth_credentials.oauth_credentials_oauthAccountId_fkey",
+    "label": "Add foreign key \"oauth_credentials_oauthAccountId_fkey\" on \"oauth_credentials\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "oauth_credentials_oauthAccountId_fkey",
+        "table": "oauth_credentials"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"oauth_credentials_oauthAccountId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "oauth_credentials_oauthAccountId_fkey",
+          "public",
+          "\"public\".\"oauth_credentials\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"oauth_credentials_oauthAccountId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"oauth_credentials\"\nADD CONSTRAINT \"oauth_credentials_oauthAccountId_fkey\"\nFOREIGN KEY (\"oauthAccountId\")\nREFERENCES \"public\".\"oauth_accounts\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"oauth_credentials_oauthAccountId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "oauth_credentials_oauthAccountId_fkey",
+          "public",
+          "\"public\".\"oauth_credentials\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.sessions.sessions_userId_fkey",
+    "label": "Add foreign key \"sessions_userId_fkey\" on \"sessions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "sessions_userId_fkey",
+        "table": "sessions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"sessions_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "sessions_userId_fkey",
+          "public",
+          "\"public\".\"sessions\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"sessions_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"sessions\"\nADD CONSTRAINT \"sessions_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"users\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"sessions_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "sessions_userId_fkey",
+          "public",
+          "\"public\".\"sessions\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.verification_tokens.verification_tokens_userId_fkey",
+    "label": "Add foreign key \"verification_tokens_userId_fkey\" on \"verification_tokens\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "verification_tokens_userId_fkey",
+        "table": "verification_tokens"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"verification_tokens_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "verification_tokens_userId_fkey",
+          "public",
+          "\"public\".\"verification_tokens\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"verification_tokens_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"verification_tokens\"\nADD CONSTRAINT \"verification_tokens_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"users\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"verification_tokens_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "verification_tokens_userId_fkey",
+          "public",
+          "\"public\".\"verification_tokens\""
+        ]
+      }
+    ]
+  }
+]

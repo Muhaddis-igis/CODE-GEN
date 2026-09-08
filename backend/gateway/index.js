@@ -3,7 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import router from "./router";
+import router from "./router.js";
 
 dotenv.config();
 

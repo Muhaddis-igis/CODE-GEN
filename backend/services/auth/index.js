@@ -1,9 +1,9 @@
 import express from "express";
-import cors from "cors";
+
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import router from "./router";
+import authRouter from "./routes/router.js";
 
 dotenv.config();
 
@@ -19,10 +19,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Basic route
-app.use(router)
+app.use(authRouter)
 
 // Start server
-app.listen(PORT||8000, () => {
-  console.log(`Gateway running on port ${PORT}`);
+app.listen(PORT||8001, () => {
+  console.log(`auth running on port ${PORT}`);
 });
 

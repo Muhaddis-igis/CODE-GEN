@@ -1,13 +1,26 @@
 import express from "express";
-import { createProxyMiddleware } from "http-proxy-middleware";
+import proxy from "express-http-proxy";
 
-const router = express.Router()
+const router = express.Router();
 
-router.use("/api/auth",
-  createProxyMiddleware({
-    target: "http://localhost:8001",
-    changeOrigin: true,
-  }),
-)
+router.use(
+  "/api/auth",
+  proxy("http://localhost:8001")
+);
 
-export default router
+router.use(
+  "/api/ai",
+  proxy("http://localhost:8002")
+);
+
+router.use(
+  "/api/projects",
+  proxy("http://localhost:8003")
+);
+
+router.use(
+  "/api/files",
+  proxy("http://localhost:8004")
+);
+
+export default router;

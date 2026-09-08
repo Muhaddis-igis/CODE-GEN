@@ -1,0 +1,4 @@
+CREATE DATABASE auth_db;
+CREATE DATABASE ai_db;
+CREATE DATABASE projects_db;
+CREATE DATABASE files_db;

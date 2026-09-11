@@ -2,7 +2,7 @@ import express from "express";
 import {
   googleAuth,
   googleCallback,
-} from "./controllers/register.js";
+} from "./controllers/Oauth.controller.js";
 
 const router = express.Router();
 

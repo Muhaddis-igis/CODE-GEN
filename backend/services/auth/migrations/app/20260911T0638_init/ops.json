@@ -41,7 +41,7 @@
     "execute": [
       {
         "description": "create table \"oauth_accounts\"",
-        "sql": "CREATE TABLE \"public\".\"oauth_accounts\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"provider\" text NOT NULL,\n  \"providerUserId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"userId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"oauth_accounts_provider_check_5918ff78\" CHECK (\"provider\" IN ('GOOGLE', 'GITHUB'))\n)",
+        "sql": "CREATE TABLE \"public\".\"oauth_accounts\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"provider\" text NOT NULL,\n  \"providerId\" text NOT NULL,\n  \"updatedAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"userId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"oauth_accounts_provider_check_5918ff78\" CHECK (\"provider\" IN ('GOOGLE', 'GITHUB'))\n)",
         "params": []
       }
     ],
@@ -80,7 +80,7 @@
     "execute": [
       {
         "description": "create table \"oauth_credentials\"",
-        "sql": "CREATE TABLE \"public\".\"oauth_credentials\" (\n  \"accessToken\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"expiresAt\" timestamptz NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"oauthAccountId\" uuid NOT NULL,\n  \"refreshToken\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "sql": "CREATE TABLE \"public\".\"oauth_credentials\" (\n  \"accessToken\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"expiresAt\" timestamptz,\n  \"id\" uuid NOT NULL,\n  \"oauthAccountId\" uuid NOT NULL,\n  \"refreshToken\" text,\n  \"updatedAt\" timestamptz DEFAULT (now()) NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
         "params": []
       }
     ],
@@ -119,7 +119,7 @@
     "execute": [
       {
         "description": "create table \"sessions\"",
-        "sql": "CREATE TABLE \"public\".\"sessions\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"expiresAt\" timestamptz NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"lastUsedAt\" timestamptz NOT NULL,\n  \"refreshTokenHash\" text NOT NULL,\n  \"revoked\" bool DEFAULT false NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"userId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "sql": "CREATE TABLE \"public\".\"sessions\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"expiresAt\" timestamptz NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"ipAddress\" text,\n  \"isValid\" bool DEFAULT true NOT NULL,\n  \"lastUsedAt\" timestamptz NOT NULL,\n  \"updatedAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"userAgent\" text,\n  \"userId\" uuid NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
         "params": []
       }
     ],
@@ -158,7 +158,7 @@
     "execute": [
       {
         "description": "create table \"users\"",
-        "sql": "CREATE TABLE \"public\".\"users\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"email\" text NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"passwordHash\" text,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"username\" text,\n  PRIMARY KEY (\"id\")\n)",
+        "sql": "CREATE TABLE \"public\".\"users\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"email\" text NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"isVerifiedEmail\" bool DEFAULT false NOT NULL,\n  \"passwordHash\" text,\n  \"updatedAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"username\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
         "params": []
       }
     ],
@@ -212,24 +212,24 @@
     ]
   },
   {
-    "id": "unique.oauth_accounts.oauth_accounts_provider_providerUserId_key",
-    "label": "Add unique constraint on \"oauth_accounts\" (provider, providerUserId)",
+    "id": "unique.oauth_accounts.oauth_accounts_provider_providerId_key",
+    "label": "Add unique constraint on \"oauth_accounts\" (provider, providerId)",
     "operationClass": "additive",
     "target": {
       "id": "postgres",
       "details": {
         "schema": "public",
         "objectType": "unique",
-        "name": "oauth_accounts_provider_providerUserId_key",
+        "name": "oauth_accounts_provider_providerId_key",
         "table": "oauth_accounts"
       }
     },
     "precheck": [
       {
-        "description": "ensure constraint \"oauth_accounts_provider_providerUserId_key\" does not exist",
+        "description": "ensure constraint \"oauth_accounts_provider_providerId_key\" does not exist",
         "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
         "params": [
-          "oauth_accounts_provider_providerUserId_key",
+          "oauth_accounts_provider_providerId_key",
           "public",
           "\"public\".\"oauth_accounts\""
         ]
@@ -237,16 +237,16 @@
     ],
     "execute": [
       {
-        "description": "add unique constraint \"oauth_accounts_provider_providerUserId_key\"",
-        "sql": "ALTER TABLE \"public\".\"oauth_accounts\" ADD CONSTRAINT \"oauth_accounts_provider_providerUserId_key\" UNIQUE (\"provider\", \"providerUserId\")"
+        "description": "add unique constraint \"oauth_accounts_provider_providerId_key\"",
+        "sql": "ALTER TABLE \"public\".\"oauth_accounts\" ADD CONSTRAINT \"oauth_accounts_provider_providerId_key\" UNIQUE (\"provider\", \"providerId\")"
       }
     ],
     "postcheck": [
       {
-        "description": "verify constraint \"oauth_accounts_provider_providerUserId_key\" exists",
+        "description": "verify constraint \"oauth_accounts_provider_providerId_key\" exists",
         "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
         "params": [
-          "oauth_accounts_provider_providerUserId_key",
+          "oauth_accounts_provider_providerId_key",
           "public",
           "\"public\".\"oauth_accounts\""
         ]

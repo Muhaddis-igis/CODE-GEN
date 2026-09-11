@@ -1,6 +1,6 @@
 #!/usr/bin/env -S node
-import type { Contract as End } from '../../snapshots/6c7ca99d9b9435177bffde24b9a0d1be5ec48107076ceff3d8070efd51d1f945/contract';
-import endContract from '../../snapshots/6c7ca99d9b9435177bffde24b9a0d1be5ec48107076ceff3d8070efd51d1f945/contract.json' with { type: 'json' };
+import type { Contract as End } from '../../snapshots/934d620037b4dc05d19a5d08b827383ea4558f3fb20ddcbe777810c74a8f294c/contract';
+import endContract from '../../snapshots/934d620037b4dc05d19a5d08b827383ea4558f3fb20ddcbe777810c74a8f294c/contract.json' with { type: 'json' };
 import {
   Migration,
   MigrationCLI,
@@ -28,9 +28,10 @@ export default class M extends Migration<never, End> {
           }),
           col('id', 'uuid', { notNull: true, codecRef: { codecId: 'pg/uuid@1' } }),
           col('provider', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
-          col('providerUserId', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('providerId', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
           col('updatedAt', 'timestamptz', {
             notNull: true,
+            default: fn('now()'),
             codecRef: { codecId: 'pg/timestamptz-temporal@1' },
           }),
           col('userId', 'uuid', { notNull: true, codecRef: { codecId: 'pg/uuid@1' } }),
@@ -53,15 +54,13 @@ export default class M extends Migration<never, End> {
             default: fn('now()'),
             codecRef: { codecId: 'pg/timestamptz-temporal@1' },
           }),
-          col('expiresAt', 'timestamptz', {
-            notNull: true,
-            codecRef: { codecId: 'pg/timestamptz-temporal@1' },
-          }),
+          col('expiresAt', 'timestamptz', { codecRef: { codecId: 'pg/timestamptz-temporal@1' } }),
           col('id', 'uuid', { notNull: true, codecRef: { codecId: 'pg/uuid@1' } }),
           col('oauthAccountId', 'uuid', { notNull: true, codecRef: { codecId: 'pg/uuid@1' } }),
-          col('refreshToken', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('refreshToken', 'text', { codecRef: { codecId: 'pg/text@1' } }),
           col('updatedAt', 'timestamptz', {
             notNull: true,
+            default: fn('now()'),
             codecRef: { codecId: 'pg/timestamptz-temporal@1' },
           }),
         ],
@@ -81,20 +80,22 @@ export default class M extends Migration<never, End> {
             codecRef: { codecId: 'pg/timestamptz-temporal@1' },
           }),
           col('id', 'uuid', { notNull: true, codecRef: { codecId: 'pg/uuid@1' } }),
+          col('ipAddress', 'text', { codecRef: { codecId: 'pg/text@1' } }),
+          col('isValid', 'bool', {
+            notNull: true,
+            default: lit(true),
+            codecRef: { codecId: 'pg/bool@1' },
+          }),
           col('lastUsedAt', 'timestamptz', {
             notNull: true,
             codecRef: { codecId: 'pg/timestamptz-temporal@1' },
           }),
-          col('refreshTokenHash', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
-          col('revoked', 'bool', {
-            notNull: true,
-            default: lit(false),
-            codecRef: { codecId: 'pg/bool@1' },
-          }),
           col('updatedAt', 'timestamptz', {
             notNull: true,
+            default: fn('now()'),
             codecRef: { codecId: 'pg/timestamptz-temporal@1' },
           }),
+          col('userAgent', 'text', { codecRef: { codecId: 'pg/text@1' } }),
           col('userId', 'uuid', { notNull: true, codecRef: { codecId: 'pg/uuid@1' } }),
         ],
         constraints: [primaryKey(['id'])],
@@ -110,11 +111,18 @@ export default class M extends Migration<never, End> {
           }),
           col('email', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
           col('id', 'uuid', { notNull: true, codecRef: { codecId: 'pg/uuid@1' } }),
+          col('isVerifiedEmail', 'bool', {
+            notNull: true,
+            default: lit(false),
+            codecRef: { codecId: 'pg/bool@1' },
+          }),
+          col('passwordHash', 'text', { codecRef: { codecId: 'pg/text@1' } }),
           col('updatedAt', 'timestamptz', {
             notNull: true,
+            default: fn('now()'),
             codecRef: { codecId: 'pg/timestamptz-temporal@1' },
           }),
-          col('username', 'text', { codecRef: { codecId: 'pg/text@1' } }),
+          col('username', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
         ],
         constraints: [primaryKey(['id'])],
       }),
@@ -149,8 +157,8 @@ export default class M extends Migration<never, End> {
       this.addUnique({
         schema: 'public',
         table: 'oauth_accounts',
-        constraint: 'oauth_accounts_provider_providerUserId_key',
-        columns: ['provider', 'providerUserId'],
+        constraint: 'oauth_accounts_provider_providerId_key',
+        columns: ['provider', 'providerId'],
       }),
       this.addUnique({
         schema: 'public',

@@ -33,9 +33,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'6c7ca99d9b9435177bffde24b9a0d1be5ec48107076ceff3d8070efd51d1f945'>;
+  StorageHashBase<'934d620037b4dc05d19a5d08b827383ea4558f3fb20ddcbe777810c74a8f294c'>;
 export type ExecutionHash =
-  ExecutionHashBase<'c33d1e2a29818cf89800565a2f2ffb4bfe213714d4a5839fe2baec382303935c'>;
+  ExecutionHashBase<'c1561347ba0a8cc2c8a9a563529c060efe247c6d871f67f45bee3d909bb17e8c'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -245,7 +245,7 @@ export type FieldOutputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly userId: CodecTypes['pg/uuid@1']['output'];
       readonly provider: 'GOOGLE' | 'GITHUB';
-      readonly providerUserId: CodecTypes['pg/text@1']['output'];
+      readonly providerId: CodecTypes['pg/text@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
@@ -253,25 +253,28 @@ export type FieldOutputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly oauthAccountId: CodecTypes['pg/uuid@1']['output'];
       readonly accessToken: CodecTypes['pg/text@1']['output'];
-      readonly refreshToken: CodecTypes['pg/text@1']['output'];
-      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly refreshToken: CodecTypes['pg/text@1']['output'] | null;
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly Session: {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly userId: CodecTypes['pg/uuid@1']['output'];
-      readonly refreshTokenHash: CodecTypes['pg/text@1']['output'];
       readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly lastUsedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-      readonly revoked: CodecTypes['pg/bool@1']['output'];
+      readonly isValid: CodecTypes['pg/bool@1']['output'];
+      readonly ipAddress: CodecTypes['pg/text@1']['output'] | null;
+      readonly userAgent: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly User: {
       readonly id: CodecTypes['pg/uuid@1']['output'];
-      readonly username: CodecTypes['pg/text@1']['output'] | null;
+      readonly username: CodecTypes['pg/text@1']['output'];
       readonly email: CodecTypes['pg/text@1']['output'];
+      readonly passwordHash: CodecTypes['pg/text@1']['output'] | null;
+      readonly isVerifiedEmail: CodecTypes['pg/bool@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
@@ -292,7 +295,7 @@ export type FieldInputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly userId: CodecTypes['pg/uuid@1']['input'];
       readonly provider: 'GOOGLE' | 'GITHUB';
-      readonly providerUserId: CodecTypes['pg/text@1']['input'];
+      readonly providerId: CodecTypes['pg/text@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
@@ -300,25 +303,28 @@ export type FieldInputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly oauthAccountId: CodecTypes['pg/uuid@1']['input'];
       readonly accessToken: CodecTypes['pg/text@1']['input'];
-      readonly refreshToken: CodecTypes['pg/text@1']['input'];
-      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly refreshToken: CodecTypes['pg/text@1']['input'] | null;
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly Session: {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly userId: CodecTypes['pg/uuid@1']['input'];
-      readonly refreshTokenHash: CodecTypes['pg/text@1']['input'];
       readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly lastUsedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
-      readonly revoked: CodecTypes['pg/bool@1']['input'];
+      readonly isValid: CodecTypes['pg/bool@1']['input'];
+      readonly ipAddress: CodecTypes['pg/text@1']['input'] | null;
+      readonly userAgent: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly User: {
       readonly id: CodecTypes['pg/uuid@1']['input'];
-      readonly username: CodecTypes['pg/text@1']['input'] | null;
+      readonly username: CodecTypes['pg/text@1']['input'];
       readonly email: CodecTypes['pg/text@1']['input'];
+      readonly passwordHash: CodecTypes['pg/text@1']['input'] | null;
+      readonly isVerifiedEmail: CodecTypes['pg/bool@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
@@ -339,35 +345,38 @@ export type StorageColumnTypes = {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly provider: 'GOOGLE' | 'GITHUB';
-      readonly providerUserId: CodecTypes['pg/text@1']['output'];
+      readonly providerId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly userId: CodecTypes['pg/uuid@1']['output'];
     };
     readonly oauth_credentials: {
       readonly accessToken: CodecTypes['pg/text@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly oauthAccountId: CodecTypes['pg/uuid@1']['output'];
-      readonly refreshToken: CodecTypes['pg/text@1']['output'];
+      readonly refreshToken: CodecTypes['pg/text@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly sessions: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly ipAddress: CodecTypes['pg/text@1']['output'] | null;
+      readonly isValid: CodecTypes['pg/bool@1']['output'];
       readonly lastUsedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-      readonly refreshTokenHash: CodecTypes['pg/text@1']['output'];
-      readonly revoked: CodecTypes['pg/bool@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly userAgent: CodecTypes['pg/text@1']['output'] | null;
       readonly userId: CodecTypes['pg/uuid@1']['output'];
     };
     readonly users: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly email: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly isVerifiedEmail: CodecTypes['pg/bool@1']['output'];
+      readonly passwordHash: CodecTypes['pg/text@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-      readonly username: CodecTypes['pg/text@1']['output'] | null;
+      readonly username: CodecTypes['pg/text@1']['output'];
     };
     readonly verification_tokens: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -386,35 +395,38 @@ export type StorageColumnInputTypes = {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly provider: 'GOOGLE' | 'GITHUB';
-      readonly providerUserId: CodecTypes['pg/text@1']['input'];
+      readonly providerId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly userId: CodecTypes['pg/uuid@1']['input'];
     };
     readonly oauth_credentials: {
       readonly accessToken: CodecTypes['pg/text@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
-      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly oauthAccountId: CodecTypes['pg/uuid@1']['input'];
-      readonly refreshToken: CodecTypes['pg/text@1']['input'];
+      readonly refreshToken: CodecTypes['pg/text@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly sessions: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly ipAddress: CodecTypes['pg/text@1']['input'] | null;
+      readonly isValid: CodecTypes['pg/bool@1']['input'];
       readonly lastUsedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
-      readonly refreshTokenHash: CodecTypes['pg/text@1']['input'];
-      readonly revoked: CodecTypes['pg/bool@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly userAgent: CodecTypes['pg/text@1']['input'] | null;
       readonly userId: CodecTypes['pg/uuid@1']['input'];
     };
     readonly users: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly email: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly isVerifiedEmail: CodecTypes['pg/bool@1']['input'];
+      readonly passwordHash: CodecTypes['pg/text@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
-      readonly username: CodecTypes['pg/text@1']['input'] | null;
+      readonly username: CodecTypes['pg/text@1']['input'];
     };
     readonly verification_tokens: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -462,7 +474,7 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                 };
-                readonly providerUserId: {
+                readonly providerId: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
@@ -477,10 +489,11 @@ type ContractBase = Omit<
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [{ readonly columns: readonly ['provider', 'providerUserId'] }];
+              uniques: readonly [{ readonly columns: readonly ['provider', 'providerId'] }];
               indexes: readonly [
                 {
                   readonly name: 'oauth_accounts_userId_idx_a489d58a';
@@ -524,12 +537,12 @@ type ContractBase = Omit<
                 readonly refreshToken: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
+                  readonly nullable: true;
                 };
                 readonly expiresAt: {
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
-                  readonly nullable: false;
+                  readonly nullable: true;
                 };
                 readonly createdAt: {
                   readonly nativeType: 'timestamptz';
@@ -541,6 +554,7 @@ type ContractBase = Omit<
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
@@ -573,11 +587,6 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/uuid@1';
                   readonly nullable: false;
                 };
-                readonly refreshTokenHash: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                };
                 readonly expiresAt: {
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
@@ -588,14 +597,24 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: false;
                 };
-                readonly revoked: {
+                readonly isValid: {
                   readonly nativeType: 'bool';
                   readonly codecId: 'pg/bool@1';
                   readonly nullable: false;
                   readonly default: {
                     readonly kind: 'literal';
-                    readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
                   };
+                };
+                readonly ipAddress: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly userAgent: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                 };
                 readonly createdAt: {
                   readonly nativeType: 'timestamptz';
@@ -607,6 +626,7 @@ type ContractBase = Omit<
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
@@ -644,12 +664,26 @@ type ContractBase = Omit<
                 readonly username: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
+                  readonly nullable: false;
                 };
                 readonly email: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
+                };
+                readonly passwordHash: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly isVerifiedEmail: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+                  };
                 };
                 readonly createdAt: {
                   readonly nativeType: 'timestamptz';
@@ -661,6 +695,7 @@ type ContractBase = Omit<
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
@@ -757,6 +792,7 @@ type ContractBase = Omit<
   readonly targetFamily: 'sql';
   readonly roots: {
     readonly users: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+    readonly sessions: { readonly namespace: 'public' & NamespaceId; readonly model: 'Session' };
     readonly oauth_accounts: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'OAuthAccount';
@@ -765,7 +801,6 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'OAuthCredential';
     };
-    readonly sessions: { readonly namespace: 'public' & NamespaceId; readonly model: 'Session' };
     readonly verification_tokens: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'VerificationToken';
@@ -789,7 +824,7 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly providerUserId: {
+              readonly providerId: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
@@ -809,7 +844,7 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
-              readonly credentials: {
+              readonly credential: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'OAuthCredential';
@@ -836,7 +871,7 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly userId: { readonly column: 'userId' };
                 readonly provider: { readonly column: 'provider' };
-                readonly providerUserId: { readonly column: 'providerUserId' };
+                readonly providerId: { readonly column: 'providerId' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
               };
@@ -857,11 +892,11 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly refreshToken: {
-                readonly nullable: false;
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly expiresAt: {
-                readonly nullable: false;
+                readonly nullable: true;
                 readonly type: {
                   readonly kind: 'scalar';
                   readonly codecId: 'pg/timestamptz-temporal@1';
@@ -919,10 +954,6 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
               };
-              readonly refreshTokenHash: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
               readonly expiresAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -937,9 +968,17 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/timestamptz-temporal@1';
                 };
               };
-              readonly revoked: {
+              readonly isValid: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly ipAddress: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly userAgent: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly createdAt: {
                 readonly nullable: false;
@@ -972,10 +1011,11 @@ type ContractBase = Omit<
               readonly fields: {
                 readonly id: { readonly column: 'id' };
                 readonly userId: { readonly column: 'userId' };
-                readonly refreshTokenHash: { readonly column: 'refreshTokenHash' };
                 readonly expiresAt: { readonly column: 'expiresAt' };
                 readonly lastUsedAt: { readonly column: 'lastUsedAt' };
-                readonly revoked: { readonly column: 'revoked' };
+                readonly isValid: { readonly column: 'isValid' };
+                readonly ipAddress: { readonly column: 'ipAddress' };
+                readonly userAgent: { readonly column: 'userAgent' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
               };
@@ -988,12 +1028,20 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
               };
               readonly username: {
-                readonly nullable: true;
+                readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly email: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly passwordHash: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly isVerifiedEmail: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
               };
               readonly createdAt: {
                 readonly nullable: false;
@@ -1052,6 +1100,8 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly username: { readonly column: 'username' };
                 readonly email: { readonly column: 'email' };
+                readonly passwordHash: { readonly column: 'passwordHash' };
+                readonly isVerifiedEmail: { readonly column: 'isVerifiedEmail' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
               };
@@ -1168,28 +1218,10 @@ type ContractBase = Omit<
         {
           readonly ref: {
             readonly namespace: 'public';
-            readonly table: 'oauth_accounts';
-            readonly column: 'updatedAt';
-          };
-          readonly onCreate: { readonly kind: 'generator'; readonly id: 'instantNow' };
-          readonly onUpdate: { readonly kind: 'generator'; readonly id: 'instantNow' };
-        },
-        {
-          readonly ref: {
-            readonly namespace: 'public';
             readonly table: 'oauth_credentials';
             readonly column: 'id';
           };
           readonly onCreate: { readonly kind: 'generator'; readonly id: 'uuidv4' };
-        },
-        {
-          readonly ref: {
-            readonly namespace: 'public';
-            readonly table: 'oauth_credentials';
-            readonly column: 'updatedAt';
-          };
-          readonly onCreate: { readonly kind: 'generator'; readonly id: 'instantNow' };
-          readonly onUpdate: { readonly kind: 'generator'; readonly id: 'instantNow' };
         },
         {
           readonly ref: {
@@ -1202,28 +1234,10 @@ type ContractBase = Omit<
         {
           readonly ref: {
             readonly namespace: 'public';
-            readonly table: 'sessions';
-            readonly column: 'updatedAt';
-          };
-          readonly onCreate: { readonly kind: 'generator'; readonly id: 'instantNow' };
-          readonly onUpdate: { readonly kind: 'generator'; readonly id: 'instantNow' };
-        },
-        {
-          readonly ref: {
-            readonly namespace: 'public';
             readonly table: 'users';
             readonly column: 'id';
           };
           readonly onCreate: { readonly kind: 'generator'; readonly id: 'uuidv4' };
-        },
-        {
-          readonly ref: {
-            readonly namespace: 'public';
-            readonly table: 'users';
-            readonly column: 'updatedAt';
-          };
-          readonly onCreate: { readonly kind: 'generator'; readonly id: 'instantNow' };
-          readonly onUpdate: { readonly kind: 'generator'; readonly id: 'instantNow' };
         },
         {
           readonly ref: {

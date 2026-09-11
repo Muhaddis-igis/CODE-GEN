@@ -1,10 +1,15 @@
-import { Router } from "express";
+import express from "express";
+import {
+  googleAuth,
+  googleCallback,
+} from "./controllers/register.js";
 
-const authRouter = Router()
+const router = express.Router();
 
-authRouter.get("/register",(req,res)=>{
-    const message = {message:"I am a user"}
-    res.status(200).send(message)
-})
+router.get("/oauth/google", googleAuth);
 
-export default authRouter
+router.get("/oauth/google/callback", googleCallback);
+
+router.post("/register",register)
+
+export default router;
